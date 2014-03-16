@@ -1,6 +1,5 @@
 package com.epam.andrii_loievets.skipass;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class SkiPassSystem {
 
 	public synchronized List<Turnstile> init() {
 		if (turnstiles == null) {
-			turnstiles = new ArrayList<Turnstile>(NUM_TURNSTILES);
+			turnstiles = new MyArrayList<Turnstile>(NUM_TURNSTILES);
 			for (int i = 0; i < NUM_TURNSTILES; ++i) {
 				Turnstile turnstile = new Turnstile();
 				turnstile.connect(this);
