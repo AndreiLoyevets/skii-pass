@@ -6,85 +6,87 @@ import java.util.List;
 /**
  * This class provides methods to produce new skipass cards, block cards, holds
  * data about turnstiles.
- * 
+ *
  * @author Andrii Loievets
  * @version 1.0 15-March-2014
- * 
+ *
  */
 public class SkiPassSystem {
-	private final int NUM_TURNSTILES = 10;
-	private static SkiPassSystem instance;
-	private int skiPassIDCounter;
-	private List<Turnstile> turnstiles;
 
-	private enum SkiPassType {
-		SEASON, HOURLY, LIMITED
-	}
+    private final int NUM_TURNSTILES = 10;
+    private static SkiPassSystem instance;
+    private int skiPassIDCounter;
+    private List<Turnstile> turnstiles;
 
-	private SkiPassSystem() {
-	}
+    private enum SkiPassType {
 
-	public static synchronized SkiPassSystem getInstance() {
-		if (instance == null) {
-			instance = new SkiPassSystem();
-		}
+        SEASON, HOURLY, LIMITED
+    }
 
-		return instance;
-	}
+    private SkiPassSystem() {
+    }
 
-	public SkiPass createSkiPass(String cardType, Date activationDate,
-			Date expirationDate, int numPassages) {
+    public static synchronized SkiPassSystem getInstance() {
+        if (instance == null) {
+            instance = new SkiPassSystem();
+        }
 
-		if (cardType == null || activationDate == null
-				|| expirationDate == null) {
-			return null;
-		}
+        return instance;
+    }
 
-		SkiPassType skiPassType = SkiPassType.valueOf(cardType);
+    public SkiPass createSkiPass(String cardType, Date activationDate,
+            Date expirationDate, int numPassages) {
 
-		switch (skiPassType) {
-		case SEASON:
-			return new SkiPass(skiPassIDCounter++, activationDate,
-					expirationDate);
-		case HOURLY:
-			return new SkiPass(skiPassIDCounter++, activationDate,
-					expirationDate);
-		case LIMITED:
-			return new LimitedSkiPass(skiPassIDCounter++, activationDate,
-					expirationDate, numPassages);
-		default:
-			return null;
-		}
-	}
+        if (cardType == null || activationDate == null
+                || expirationDate == null) {
+            return null;
+        }
 
-	public boolean validate(SkiPass sp) {
-		int id = sp.getID();
+        SkiPassType skiPassType = SkiPassType.valueOf(cardType);
 
-		if (id < 0 || id >= skiPassIDCounter) {
-			return false;
-		} else {
-			return true;
-		}
-	}
+        switch (skiPassType) {
+            case SEASON:
+                return new SkiPass(skiPassIDCounter++, cardType,
+                        activationDate, expirationDate);
+            case HOURLY:
+                return new SkiPass(skiPassIDCounter++, cardType,
+                        activationDate, expirationDate);
+            case LIMITED:
+                return new LimitedSkiPass(skiPassIDCounter++, cardType,
+                        activationDate, expirationDate, numPassages);
+            default:
+                return null;
+        }
+    }
 
-	public synchronized List<Turnstile> init() {
-		if (turnstiles == null) {
-			turnstiles = new MyArrayList<Turnstile>(NUM_TURNSTILES);
-			for (int i = 0; i < NUM_TURNSTILES; ++i) {
-				Turnstile turnstile = new Turnstile();
-				turnstile.connect(this);
-				turnstiles.add(turnstile);
-			}
-		}
+    public boolean validate(SkiPass sp) {
+        int id = sp.getID();
 
-		return turnstiles;
-	}
+        if (id < 0 || id >= skiPassIDCounter) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-	public Turnstile getTurnstile(int id) {
-		if (id < 0 || id >= turnstiles.size()) {
-			return null;
-		} else {
-			return turnstiles.get(id);
-		}
-	}
+    public synchronized List<Turnstile> init() {
+        if (turnstiles == null) {
+            turnstiles = new MyArrayList<Turnstile>(NUM_TURNSTILES);
+            for (int i = 0; i < NUM_TURNSTILES; ++i) {
+                Turnstile turnstile = new Turnstile();
+                turnstile.connect(this);
+                turnstiles.add(turnstile);
+            }
+        }
+
+        return turnstiles;
+    }
+
+    public Turnstile getTurnstile(int id) {
+        if (id < 0 || id >= turnstiles.size()) {
+            return null;
+        } else {
+            return turnstiles.get(id);
+        }
+    }
 }
